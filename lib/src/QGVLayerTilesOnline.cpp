@@ -19,6 +19,11 @@
 #include "QGVLayerTilesOnline.h"
 #include "QGVImage.h"
 
+QGVLayerTilesOnline::QGVLayerTilesOnline(): mTileCache("map.db")
+{
+
+}
+
 QGVLayerTilesOnline::~QGVLayerTilesOnline()
 {
     qDeleteAll(mRequest);
@@ -39,6 +44,12 @@ void QGVLayerTilesOnline::onClean()
 
 void QGVLayerTilesOnline::request(const QGV::GeoTilePos& tilePos)
 {
+//    qDebug("Requested new tile");
+    if (mTileCache.isOpen() && mTileCache.isCached(tilePos)) {
+        auto tile = mTileCache.getCached(tilePos);
+        onTile(tilePos, tile);
+        return;
+    }
     const QUrl url(tilePosToUrl(tilePos));
     QNetworkRequest request(url);
     QSslConfiguration conf = request.sslConfiguration();
@@ -83,6 +94,9 @@ void QGVLayerTilesOnline::onReplyFinished(QNetworkReply* reply)
         return;
     }
     const auto rawImage = reply->readAll();
+    if (mTileCache.isOpen()) {
+        mTileCache.cache(tilePos, rawImage, reply->url().toString());
+    }
     auto tile = new QGVImage();
     tile->setGeometry(tilePos.toGeoRect());
     tile->loadImage(rawImage);

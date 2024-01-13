@@ -19,6 +19,7 @@
 #pragma once
 
 #include "QGVLayerTiles.h"
+#include "QGVTileCache.h"
 
 #include <QNetworkReply>
 
@@ -27,6 +28,7 @@ class QGV_LIB_DECL QGVLayerTilesOnline : public QGVLayerTiles
     Q_OBJECT
 
 public:
+    QGVLayerTilesOnline();
     ~QGVLayerTilesOnline();
 
 protected:
@@ -42,4 +44,5 @@ private:
 
 private:
     QMap<QGV::GeoTilePos, QNetworkReply*> mRequest;
+    QGVTileCache mTileCache;
 };
