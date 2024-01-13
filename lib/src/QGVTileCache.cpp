@@ -4,14 +4,17 @@
 
 QGVTileCache::QGVTileCache(const QString& path): mPath(path)
 {
-    QSqlDatabase mDB = QSqlDatabase::addDatabase("QSQLITE");
-    mDB.setDatabaseName(path);
-    if (mDB.open()) {
-        qDebug() << "opened database at" << path;
+    if (mPath != ":memory:") {
+        mPath.append(".db");
+    }
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName(mPath);
+    if (db.open()) {
+        qDebug() << "opened database at" << mPath;
         mOpened = true;
         createTable();
     } else {
-        qDebug() << "failed to open database at " << path;
+        qDebug() << "failed to open database at " << mPath;
     }
 }
 

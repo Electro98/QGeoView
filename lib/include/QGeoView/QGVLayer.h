@@ -27,7 +27,7 @@ class QGV_LIB_DECL QGVLayer : public QGVItem
     Q_PROPERTY(QString description READ getDescription WRITE setDescription)
 
 public:
-    void setName(const QString& name);
+    virtual void setName(const QString& name);
     QString getName() const;
 
     void setDescription(const QString& description);

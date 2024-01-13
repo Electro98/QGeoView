@@ -18,7 +18,7 @@ public:
 private:
 //    QSqlDatabase *mDB = nullptr;
     bool mOpened = false;
-    const QString& mPath;
+    QString mPath;
 
     bool createTable();
 };

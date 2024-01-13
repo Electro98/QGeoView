@@ -19,7 +19,7 @@
 #include "QGVLayerTilesOnline.h"
 #include "QGVImage.h"
 
-QGVLayerTilesOnline::QGVLayerTilesOnline(): mTileCache("map.db")
+QGVLayerTilesOnline::QGVLayerTilesOnline(): mTileCache(":memory:")
 {
 
 }
@@ -27,6 +27,12 @@ QGVLayerTilesOnline::QGVLayerTilesOnline(): mTileCache("map.db")
 QGVLayerTilesOnline::~QGVLayerTilesOnline()
 {
     qDeleteAll(mRequest);
+}
+
+void QGVLayerTilesOnline::setName(const QString &name)
+{
+    mTileCache = QGVTileCache(name);
+    QGVLayerTiles::setName(name);
 }
 
 void QGVLayerTilesOnline::onProjection(QGVMap* geoMap)

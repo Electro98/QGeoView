@@ -31,6 +31,8 @@ public:
     QGVLayerTilesOnline();
     ~QGVLayerTilesOnline();
 
+    void setName(const QString& name) override;
+
 protected:
     virtual QString tilePosToUrl(const QGV::GeoTilePos& tilePos) const = 0;
 
