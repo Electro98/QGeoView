@@ -30,7 +30,8 @@ HEADERS += \
     $$PWD/include/QGeoView/QGVWidgetScale.h \
     $$PWD/include/QGeoView/QGVWidgetText.h \
     $$PWD/include/QGeoView/QGVWidgetZoom.h \
-    $$PWD/include/QGeoView/QGVTileCache.h
+    $$PWD/include/QGeoView/QGVTileCache.h \
+    $$PWD/include/QGeoView/QGVDefaultTile.h
 
 SOURCES += \
     $$PWD/src/QGVCamera.cpp \
@@ -57,7 +58,8 @@ SOURCES += \
     $$PWD/src/QGVWidgetScale.cpp \
     $$PWD/src/QGVWidgetText.cpp \
     $$PWD/src/QGVWidgetZoom.cpp \
-    $$PWD/src/QGVTileCache.cpp
+    $$PWD/src/QGVTileCache.cpp \
+    $$PWD/src/QGVDefaultTile.cpp
 
 INCLUDEPATH += \
     $$PWD/include/ \

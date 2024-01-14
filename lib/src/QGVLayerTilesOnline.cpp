@@ -18,6 +18,7 @@
 
 #include "QGVLayerTilesOnline.h"
 #include "QGVImage.h"
+#include "QGVDefaultTile.h"
 
 QGVLayerTilesOnline::QGVLayerTilesOnline(): mTileCache(":memory:")
 {
@@ -96,7 +97,9 @@ void QGVLayerTilesOnline::onReplyFinished(QNetworkReply* reply)
         if (reply->error() != QNetworkReply::OperationCanceledError) {
             qgvCritical() << "ERROR" << reply->errorString();
         }
+        auto noDataTile = new QGVDefaultTile(tilePos);
         removeReply(tilePos);
+        onTile(tilePos, noDataTile);
         return;
     }
     const auto rawImage = reply->readAll();
