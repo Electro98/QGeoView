@@ -3,6 +3,7 @@
 #include "QGVLayerTiles.h"
 #include "QGVImage.h"
 
+#include <QSqlDatabase>
 
 class QGVTileCache
 {
@@ -16,9 +17,7 @@ public:
     QGVImage *getCached(const QGV::GeoTilePos& tilePos) const;
 
 private:
-//    QSqlDatabase *mDB = nullptr;
-    bool mOpened = false;
-    QString mPath;
+    QSqlDatabase mDB;
 
     bool createTable();
 };

@@ -2,7 +2,7 @@ TARGET = qgeoview-samples-shared
 TEMPLATE = lib
 CONFIG += staticlib
 
-QT += gui widgets network
+QT += gui widgets network sql
 
 include(../lib.pri)
 

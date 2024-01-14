@@ -1,30 +1,34 @@
 #include "QGVTileCache.h"
-#include <QSqlDatabase>
 #include <QSqlQuery>
 
-QGVTileCache::QGVTileCache(const QString& path): mPath(path)
+QGVTileCache::QGVTileCache(const QString& path)
 {
-    if (mPath != ":memory:") {
-        mPath.append(".db");
+    QString filename(path);
+    if (path != ":memory:") {
+        filename.append(".db");
     }
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName(mPath);
-    if (db.open()) {
-        qDebug() << "opened database at" << mPath;
-        mOpened = true;
+    mDB = QSqlDatabase::addDatabase("QSQLITE", path);
+    mDB.setDatabaseName(filename);
+    if (mDB.open()) {
+        qgvDebug() << "opened database at" << filename;
         createTable();
     } else {
-        qDebug() << "failed to open database at " << mPath;
+        qgvDebug() << "failed to open database at " << filename;
     }
 }
 
 QGVTileCache::~QGVTileCache()
 {
-    QSqlDatabase::removeDatabase(mPath);
+    // There is no point in trying to close all connection,
+    // because changing in name can happen 3 or more times
+    // during QGVLayersTilesOnline child construction.
+//    QString connectionName = mDB.connectionName();
+//    mDB.close();
+//    QSqlDatabase::removeDatabase(connectionName);
 }
 
 bool QGVTileCache::createTable() {
-    QSqlQuery query;
+    QSqlQuery query(mDB);
     query.prepare("CREATE TABLE tiles("
                     "   zoom INTEGER NOT NULL,"
                     "   x INTEGER NOT NULL,"
@@ -35,19 +39,19 @@ bool QGVTileCache::createTable() {
                     ") STRICT;");
     bool success = query.exec();
     if (success) {
-        qDebug() << "created table for cached tiles";
+        qgvDebug() << "created table for cached tiles";
     } else {
-        qDebug() << "failed to create table. already exists?";
+        qgvDebug() << "failed to create table. already exists?";
     }
     return success;
 }
 
 bool QGVTileCache::isOpen() const {
-    return mOpened;
+    return mDB.isOpen();
 }
 
 bool QGVTileCache::isCached(const QGV::GeoTilePos& tilePos) const {
-    QSqlQuery query;
+    QSqlQuery query(mDB);
     query.prepare("SELECT x FROM tiles WHERE zoom = (:zoom) AND x = (:x) AND y = (:y)");
     query.bindValue(":zoom", tilePos.zoom());
     const auto pos = tilePos.pos();
@@ -57,7 +61,7 @@ bool QGVTileCache::isCached(const QGV::GeoTilePos& tilePos) const {
 }
 
 bool QGVTileCache::cache(const QGV::GeoTilePos& tilePos, const QByteArray& rawImage, const QString &url) {
-    QSqlQuery query;
+    QSqlQuery query(mDB);
     query.prepare("INSERT INTO tiles (zoom, x, y, image, debug) VALUES (:zoom, :x, :y, :image, :debug)");
     query.bindValue(":zoom", tilePos.zoom());
     const auto pos = tilePos.pos();
@@ -78,7 +82,7 @@ bool QGVTileCache::cache(const QGV::GeoTilePos& tilePos, const QByteArray& rawIm
 }
 
 QGVImage *QGVTileCache::getCached(const QGV::GeoTilePos& tilePos) const {
-    QSqlQuery query;
+    QSqlQuery query(mDB);
     query.prepare("SELECT image, debug FROM tiles WHERE zoom = (:zoom) AND x = (:x) AND y = (:y)");
     query.bindValue(":zoom", tilePos.zoom());
     const auto pos = tilePos.pos();
